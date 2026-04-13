@@ -1,9 +1,58 @@
+import tkinter as tk
+from tkinter import messagebox
 import random
 import string
 
-length = int(input("Enter password length: "))
+root = tk.Tk()
+root.title("Password Generator")
+root.geometry("400x400")
+root.resizable(False, False)
+root.config(bg="#f0f0f5")
 
-chars = string.ascii_letters + string.digits + string.punctuation
-password = "".join(random.choice(chars) for _ in range(length))
+title = tk.Label(root, text="Password Generator",
+                 font=("Segoe UI", 20, "bold"), bg="#f0f0f5")
+title.pack(pady=15)
 
-print("Generated Password:", password)
+box = tk.Frame(root, bg="#1a1a2e", bd=2, relief="groove")
+box.pack(padx=20, pady=10, fill="both")
+
+password_text = tk.Label(box, text="Password will appear here",
+                         font=("Consolas", 14), bg="#1a1a2e", fg="#a0a0cc")
+password_text.pack(pady=20)
+
+slider_label = tk.Label(box, text="Select password length:",
+                        font=("Segoe UI", 12), bg="#1a1a2e", fg="#e0e0ff")
+slider_label.pack()
+
+length_var = tk.IntVar(value=10)
+slider = tk.Scale(box, from_=4, to=30, orient="horizontal",
+                  variable=length_var, length=250, bg="#1a1a2e",
+                  fg="#e0e0ff", highlightthickness=0, troughcolor="#2e2e50")
+slider.pack(pady=10)
+
+def generate_password():
+    length = length_var.get()
+    letters_and_numbers = string.ascii_letters + string.digits
+    password = "".join(random.choice(letters_and_numbers) for _ in range(length))
+    password_text.config(text=password, fg="#e0e0ff")
+
+def copy_password():
+    password = password_text.cget("text")
+    if password == "Password will appear here":
+        messagebox.showwarning("Error", "Please generate a password first!")
+        return
+    root.clipboard_clear()
+    root.clipboard_append(password)
+    messagebox.showinfo("Copied", "Password copied!")
+
+def make_button(name, action):
+    btn = tk.Button(box, text=name, font=("Segoe UI", 12, "bold"),
+                    bg="#6c63ff", fg="white", relief="flat",
+                    activebackground="#574fd6", activeforeground="white",
+                    cursor="hand2", command=action)
+    btn.pack(pady=6, padx=12, fill="x")
+
+make_button("Generate Password", generate_password)
+make_button("Copy Password", copy_password)
+
+root.mainloop()
